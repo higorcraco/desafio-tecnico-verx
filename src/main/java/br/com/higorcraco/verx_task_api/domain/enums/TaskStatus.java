@@ -1,4 +1,4 @@
-package br.com.higorcraco.verx_task_api.domain;
+package br.com.higorcraco.verx_task_api.domain.enums;
 
 public enum TaskStatus {
     TODO,

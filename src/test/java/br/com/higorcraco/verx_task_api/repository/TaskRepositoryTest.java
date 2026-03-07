@@ -1,7 +1,7 @@
 package br.com.higorcraco.verx_task_api.repository;
 
 import br.com.higorcraco.verx_task_api.domain.Task;
-import br.com.higorcraco.verx_task_api.domain.TaskStatus;
+import br.com.higorcraco.verx_task_api.domain.enums.TaskStatus;
 import br.com.higorcraco.verx_task_api.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

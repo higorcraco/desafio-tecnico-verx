@@ -1,6 +1,6 @@
 package br.com.higorcraco.verx_task_api.repository;
 
-import br.com.higorcraco.verx_task_api.domain.Role;
+import br.com.higorcraco.verx_task_api.domain.enums.Role;
 import br.com.higorcraco.verx_task_api.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

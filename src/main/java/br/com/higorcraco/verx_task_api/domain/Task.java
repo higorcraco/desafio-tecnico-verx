@@ -1,5 +1,6 @@
 package br.com.higorcraco.verx_task_api.domain;
 
+import br.com.higorcraco.verx_task_api.domain.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
