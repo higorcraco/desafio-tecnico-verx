@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: verx-task-api
+  liquibase:
+    change-log: classpath:db/changelog/master.xml
