@@ -80,7 +80,7 @@ public class AuthService {
         String userIdStr = redisTemplate.opsForValue().get(key);
 
         if (userIdStr == null) {
-            throw new InvalidTokenException("Refresh token not found or expired");
+            throw new InvalidTokenException("Refresh token não encontrado ou expirado");
         }
 
         // Rotate: deleção do token antigo e criação de um novo

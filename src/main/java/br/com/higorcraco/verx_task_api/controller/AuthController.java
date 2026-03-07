@@ -5,6 +5,7 @@ import br.com.higorcraco.verx_task_api.dto.auth.LoginRequest;
 import br.com.higorcraco.verx_task_api.dto.auth.RefreshTokenRequest;
 import br.com.higorcraco.verx_task_api.dto.auth.RegisterRequest;
 import br.com.higorcraco.verx_task_api.service.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@SecurityRequirements
 public class AuthController {
 
     private final AuthService authService;
