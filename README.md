@@ -113,6 +113,8 @@ Toda a stack (aplicação + PostgreSQL + Redis) pode ser inicializada com um ún
    cp .env.example .env
    ```
 
+   O `.env.example` já inclui `COMPOSE_PROFILES=prod`, que faz com que `docker compose up` suba todos os serviços automaticamente (equivalente a `--profile prod`).
+
 2. **Build e inicialização** de todos os serviços:
 
    ```bash
@@ -130,6 +132,12 @@ Toda a stack (aplicação + PostgreSQL + Redis) pode ser inicializada com um ún
    ```bash
    docker compose down -v
    ```
+
+> **Profiles disponíveis:**
+> - `prod` – sobe `db`, `redis` e `app` (padrão via `COMPOSE_PROFILES=prod` no `.env`)
+> - `dev` – sobe apenas `db` e `redis` (útil para rodar a aplicação localmente com `./gradlew bootRun`)
+>
+> Para usar o perfil `dev` explicitamente: `docker compose --profile dev up`
 
 A aplicação estará disponível em `http://localhost:8080`.
 
