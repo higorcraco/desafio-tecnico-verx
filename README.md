@@ -145,6 +145,7 @@ Toda a configuração é fornecida por variáveis de ambiente (carregadas do `.e
 | `JWT_EXP_MINUTES` | Tempo de vida do access token em minutos | `30` |
 | `REDIS_HOST` | Hostname do Redis | `localhost` |
 | `REDIS_PORT` | Porta do Redis | `6379` |
+| `CORS_ALLOWED_ORIGINS` | Origens permitidas pelo CORS, separadas por vírgula | `http://localhost:3000,http://localhost:5173` |
 
 > ⚠️ **Nunca faça commit de segredos reais.** O arquivo `.env` está no `.gitignore`. Use `.env.example` como template.
 

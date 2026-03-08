@@ -55,6 +55,7 @@ services:
       REDIS_PORT: 6379
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXP_MINUTES: ${JWT_EXP_MINUTES:-30}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
     ports:
       - "8080:8080"
     networks:
