@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs exclusion filter for verx-task-api.
+  Excludes known false positives from Lombok, Spring, and test classes.
+  Run: ./gradlew spotbugsMain
+-->
+<FindBugsFilter
+    xmlns="https://github.com/spotbugs/filter/3.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0
+        https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/etc/findbugsfilter.xsd">
+
+    <!-- Exclude all test classes from SpotBugs analysis -->
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+
+    <!--
+      EI_EXPOSE_REP / EI_EXPOSE_REP2: Spring @Component / @Service / @Configuration classes
+      use constructor injection (@RequiredArgsConstructor / @AllArgsConstructor), which stores
+      Spring-managed beans. These are intentional and safe within the IoC container.
+      Records used as DTOs (e.g. UserResponse) expose Set<Role> which is also intentional.
+    -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Lombok-generated @RequiredArgsConstructor / @Builder patterns -->
+    <Match>
+        <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+    </Match>
+
+</FindBugsFilter>
