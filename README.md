@@ -33,7 +33,7 @@ A Verx Task API disponibiliza endpoints para:
 O Swagger UI fica disponível em `http://localhost:8080/swagger-ui.html` quando a aplicação estiver em execução.
 
 Para facilitar o teste da API, um usuário inicial com permissão de ADMIN foi inserido: 
-email: master@gmail.com
+email: master@example.com
 pass: mudar.123
 
 ---
