@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-minutes: ${JWT_EXP_MINUTES:30}
+
+logging:
+  level:
+    br.com.higorcraco: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
