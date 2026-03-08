@@ -151,7 +151,7 @@ Toda a configuração é fornecida por variáveis de ambiente (carregadas do `.e
 |---|---|---|
 | `DB_HOST` | Hostname do PostgreSQL | `localhost` |
 | `DB_PORT` | Porta do PostgreSQL | `5432` |
-| `DB_NAME` | Nome do banco de dados | `verx_task_db` |
+| `DB_NAME` | Nome do banco de dados | `task_db` |
 | `DB_USER` | Usuário do banco de dados | `postgres` |
 | `DB_PASSWORD` | Senha do banco de dados | `postgres` |
 | `JWT_SECRET` | Segredo HMAC HS256 para assinar tokens (mín. 32 caracteres) | *(padrão apenas para dev)* |
