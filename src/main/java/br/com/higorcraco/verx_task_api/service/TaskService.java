@@ -1,5 +1,7 @@
 package br.com.higorcraco.verx_task_api.service;
 
+import java.util.Objects;
+
 import br.com.higorcraco.verx_task_api.domain.Task;
 import br.com.higorcraco.verx_task_api.domain.User;
 import br.com.higorcraco.verx_task_api.domain.enums.TaskStatus;
@@ -49,11 +51,11 @@ public class TaskService {
 
         Page<Task> page;
         if (currentUser.isAdmin()) {
-            page = status != null
+            page = Objects.nonNull(status)
                     ? taskRepository.findByStatus(status, pageable)
                     : taskRepository.findAll(pageable);
         } else {
-            page = status != null
+            page = Objects.nonNull(status)
                     ? taskRepository.findByOwnerIdAndStatus(currentUser.getId(), status, pageable)
                     : taskRepository.findByOwnerId(currentUser.getId(), pageable);
         }
