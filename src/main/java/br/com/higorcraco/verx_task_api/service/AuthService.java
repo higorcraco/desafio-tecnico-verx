@@ -18,6 +18,7 @@ import br.com.higorcraco.verx_task_api.security.CustomUserDetailsService;
 import br.com.higorcraco.verx_task_api.security.JwtProperties;
 import br.com.higorcraco.verx_task_api.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -44,6 +46,7 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
+            log.warn("Tentativa de registro com email já existente: email={}", request.email());
             throw new EmailAlreadyExistsException(request.email());
         }
 
@@ -55,6 +58,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        log.info("Novo usuário registrado: id={}, email={}", user.getId(), user.getEmail());
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String accessToken = jwtTokenService.generateAccessToken(userDetails);
@@ -72,6 +76,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException(USER_RESOURCE_NAME, request.email()));
 
+        log.info("Login realizado com sucesso: email={}", user.getEmail());
         return generateAuthResponse(user);
     }
 
@@ -80,6 +85,7 @@ public class AuthService {
         String userIdStr = redisTemplate.opsForValue().get(key);
 
         if (userIdStr == null) {
+            log.warn("Tentativa de refresh com token não encontrado ou expirado");
             throw new InvalidTokenException("Refresh token não encontrado ou expirado");
         }
 
@@ -90,6 +96,7 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_RESOURCE_NAME, userId.toString()));
 
+        log.info("Refresh token rotacionado com sucesso: userId={}", userId);
         return generateAuthResponse(user);
     }
 
