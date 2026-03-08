@@ -1,22 +1,19 @@
 package br.com.higorcraco.verx_task_api.repository;
 
-import br.com.higorcraco.verx_task_api.domain.enums.Role;
+import java.util.Optional;
+import java.util.Set;
+
 import br.com.higorcraco.verx_task_api.domain.User;
+import br.com.higorcraco.verx_task_api.domain.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ImportAutoConfiguration(LiquibaseAutoConfiguration.class)
 @Sql("/sqls/users.sql")
 class UserRepositoryTest extends AbstractRepositoryTest {
 
