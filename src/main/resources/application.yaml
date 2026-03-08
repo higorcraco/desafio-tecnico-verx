@@ -4,6 +4,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/master.xml
 
+cors:
+  allowed-origins: http://localhost:8080
+
 logging:
   level:
     root: INFO

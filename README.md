@@ -11,6 +11,7 @@ API REST para gerenciamento de tarefas construída com **Java 21** e **Spring Bo
 - [Configuração Local](#configuração-local)
 - [Configuração com Docker](#configuração-com-docker)
 - [Variáveis de Ambiente](#variáveis-de-ambiente)
+- [CORS](#cors)
 - [Referência da API](#referência-da-api)
   - [Autenticação](#autenticação)
   - [Tarefas](#tarefas)
@@ -149,9 +150,35 @@ Toda a configuração é fornecida por variáveis de ambiente (carregadas do `.e
 | `JWT_EXP_MINUTES` | Tempo de vida do access token em minutos | `30` |
 | `REDIS_HOST` | Hostname do Redis | `localhost` |
 | `REDIS_PORT` | Porta do Redis | `6379` |
-| `CORS_ALLOWED_ORIGINS` | Origens permitidas pelo CORS, separadas por vírgula | `http://localhost:3000,http://localhost:5173` |
+| `CORS_ALLOWED_ORIGINS` | Origens permitidas pelo CORS, separadas por vírgula | `http://localhost:8080,http://localhost:3000,http://localhost:5173` |
 
 > ⚠️ **Nunca faça commit de segredos reais.** O arquivo `.env` está no `.gitignore`. Use `.env.example` como template.
+
+---
+
+## CORS
+
+O CORS é configurado no Spring Security e lê as origens permitidas da propriedade `cors.allowed-origins`, injetada via variável de ambiente `CORS_ALLOWED_ORIGINS` no perfil de produção.
+
+**Padrão (dev):** `http://localhost:8080,http://localhost:3000,http://localhost:5173`
+
+> `http://localhost:8080` **deve estar na lista** para o Swagger UI funcionar. O browser envia o cabeçalho `Origin: http://localhost:8080` nos preflights `OPTIONS` e nas requisições `POST`/`PUT` com `Content-Type: application/json`. Se a origem não estiver na lista, o Spring Security retorna 403 e o browser bloqueia a resposta.
+
+**Configuração em produção** — inclua a URL da própria API para o Swagger continuar funcional:
+
+```env
+CORS_ALLOWED_ORIGINS=https://api.meuapp.com,https://meuapp.com,https://admin.meuapp.com
+```
+
+**Políticas aplicadas a todas as rotas (`/**`):**
+
+| Propriedade | Valor |
+|---|---|
+| Origens permitidas | Definidas por `CORS_ALLOWED_ORIGINS` |
+| Métodos permitidos | `GET`, `POST`, `PUT`, `DELETE`, `OPTIONS` |
+| Headers permitidos | `Authorization`, `Content-Type`, `Accept` |
+| `allowCredentials` | `true` |
+| `maxAge` (cache preflight) | 3 600 s |
 
 ---
 
