@@ -298,9 +298,23 @@ Authorization: Bearer <access_token>
 
 ### Usuários
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/me` | Obter perfil do usuário autenticado |
+| Método | Endpoint | Autenticação | Descrição |
+|---|---|---|---|
+| `GET` | `/users/me` | Autenticado | Obter perfil do usuário autenticado |
+| `POST` | `/users/{id}/roles` | ADMIN | Adicionar roles ao usuário |
+| `DELETE` | `/users/{id}/roles` | ADMIN | Remover roles do usuário |
+
+#### `POST /users/{id}/roles` e `DELETE /users/{id}/roles`
+
+**Corpo da requisição:**
+
+```json
+{
+  "roles": ["ADMIN"]
+}
+```
+
+**Resposta `200`:** perfil atualizado do usuário com as roles modificadas.
 
 ---
 
@@ -335,8 +349,26 @@ curl -s -X POST http://localhost:8080/auth/refresh \
 ### Obter usuário atual
 
 ```bash
-curl -s http://localhost:8080/me \
+curl -s http://localhost:8080/users/me \
   -H "Authorization: Bearer <access_token>" | jq
+```
+
+### Adicionar roles a um usuário (ADMIN)
+
+```bash
+curl -s -X POST http://localhost:8080/users/1/roles \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"roles":["ADMIN"]}' | jq
+```
+
+### Remover roles de um usuário (ADMIN)
+
+```bash
+curl -s -X DELETE http://localhost:8080/users/1/roles \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"roles":["ADMIN"]}' | jq
 ```
 
 ### Criar uma tarefa

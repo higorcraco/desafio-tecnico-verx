@@ -9,12 +9,15 @@ import br.com.higorcraco.verx_task_api.security.JwtAuthenticationFilter;
 import br.com.higorcraco.verx_task_api.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,21 +29,68 @@ class UserControllerTest {
     @MockitoBean UserService userService;
     @MockitoBean JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Test
-    @WithMockUser(username = "user@test.com", roles = "USER")
-    void getCurrentUser() throws Exception {
-        UserResponse response = new UserResponse(
-                1L, "User Name", "user@test.com",
-                Set.of(Role.USER),
+    private static final String EMAIL = "user@test.com";
+
+    private UserResponse buildResponse(Set<Role> roles) {
+        return new UserResponse(
+                1L, "User Name", EMAIL, roles,
                 LocalDateTime.of(2024, 1, 1, 0, 0),
                 LocalDateTime.of(2024, 1, 1, 0, 0));
+    }
 
-        when(userService.getCurrentUserResponse()).thenReturn(response);
+    @Test
+    @WithMockUser(username = EMAIL, roles = "USER")
+    void getCurrentUser_shouldReturn200WithProfile() throws Exception {
+        when(userService.getCurrentUserResponse()).thenReturn(buildResponse(Set.of(Role.USER)));
 
-        mockMvc.perform(get("/me"))
+        mockMvc.perform(get("/users/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("User Name"))
-                .andExpect(jsonPath("$.email").value("user@test.com"));
+                .andExpect(jsonPath("$.email").value(EMAIL));
+    }
+
+    @Test
+    @WithMockUser(username = EMAIL, roles = "ADMIN")
+    void addRoles_shouldReturn200WithUpdatedUser() throws Exception {
+        UserResponse response = buildResponse(Set.of(Role.USER, Role.ADMIN));
+        when(userService.addRoles(1L, Set.of(Role.ADMIN))).thenReturn(response);
+
+        mockMvc.perform(post("/users/1/roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"roles\":[\"ADMIN\"]}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    @WithMockUser(username = EMAIL, roles = "ADMIN")
+    void addRoles_shouldReturn400WhenRolesIsEmpty() throws Exception {
+        mockMvc.perform(post("/users/1/roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"roles\":[]}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = EMAIL, roles = "ADMIN")
+    void removeRoles_shouldReturn200WithUpdatedUser() throws Exception {
+        UserResponse response = buildResponse(Set.of(Role.USER));
+        when(userService.removeRoles(1L, Set.of(Role.ADMIN))).thenReturn(response);
+
+        mockMvc.perform(delete("/users/1/roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"roles\":[\"ADMIN\"]}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    @WithMockUser(username = EMAIL, roles = "ADMIN")
+    void removeRoles_shouldReturn400WhenRolesIsEmpty() throws Exception {
+        mockMvc.perform(delete("/users/1/roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"roles\":[]}"))
+                .andExpect(status().isBadRequest());
     }
 }
