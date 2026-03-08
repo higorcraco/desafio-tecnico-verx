@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.11'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle'
+	id 'com.github.spotbugs' version '6.0.27'
 }
 
 group = 'br.com.higorcraco'
@@ -54,4 +56,33 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+checkstyle {
+	toolVersion = '10.21.0'
+	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+	ignoreFailures = false
+	maxWarnings = 0
+}
+
+spotbugs {
+	toolVersion = '4.8.6'
+	effort = 'default'
+	reportLevel = 'medium'
+	ignoreFailures = false
+	excludeFilter = file("${rootDir}/config/spotbugs/exclude.xml")
+}
+
+spotbugsMain {
+	reports {
+		html {
+			required = true
+			outputLocation = file("${buildDir}/reports/spotbugs/main.html")
+		}
+	}
+}
+
+// SpotBugs on test sources is informational only
+spotbugsTest {
+	ignoreFailures = true
 }
