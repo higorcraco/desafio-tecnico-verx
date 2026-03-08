@@ -3,3 +3,11 @@ spring:
     name: verx-task-api
   liquibase:
     change-log: classpath:db/changelog/master.xml
+
+logging:
+  level:
+    root: INFO
+    br.com.higorcraco: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
