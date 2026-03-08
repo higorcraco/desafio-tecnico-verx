@@ -7,10 +7,9 @@
 
     <changeSet id="insert-master-user" author="higorcraco">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">SELECT COUNT(1) FROM users WHERE id = 1</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(1) FROM users WHERE email = 'master@exemplo.com'</sqlCheck>
         </preConditions>
         <insert tableName="users">
-            <column name="id" valueNumeric="1"/>
             <column name="name" value="master"/>
             <column name="email" value="master@exemplo.com"/>
             <column name="password" value="$2a$10$2yX.G8lbDv402afeGBbPo.0rdU63Z4DpSWbKlGCkH9Grq5hxKRC7K"/>
@@ -21,16 +20,14 @@
 
     <changeSet id="insert-master-user-roles" author="higorcraco">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">SELECT COUNT(1) FROM user_roles WHERE user_id = 1</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(1) FROM user_roles ur JOIN users u ON ur.user_id = u.id WHERE u.email = 'master@exemplo.com'</sqlCheck>
         </preConditions>
-        <insert tableName="user_roles">
-            <column name="user_id" valueNumeric="1"/>
-            <column name="role" value="ADMIN"/>
-        </insert>
-        <insert tableName="user_roles">
-            <column name="user_id" valueNumeric="1"/>
-            <column name="role" value="USER"/>
-        </insert>
+        <sql>
+            INSERT INTO user_roles (user_id, role)
+            SELECT id, 'ADMIN' FROM users WHERE email = 'master@exemplo.com';
+            INSERT INTO user_roles (user_id, role)
+            SELECT id, 'USER' FROM users WHERE email = 'master@exemplo.com';
+        </sql>
     </changeSet>
 
 </databaseChangeLog>
