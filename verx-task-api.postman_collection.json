@@ -1,0 +1,378 @@
+{
+  "info": {
+    "name": "Verx Task API",
+    "description": "Coleção para a Verx Task API – gerenciamento de tarefas com autenticação JWT.\n\n**Configuração:**\n1. Defina a variável de coleção `baseUrl` (padrão: `http://localhost:8080`).\n2. Execute **Registrar** ou **Login** – as variáveis `accessToken` e `refreshToken` são salvas automaticamente.\n3. Todas as requisições protegidas utilizam o `accessToken` salvo automaticamente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "Registrar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', body.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', body.refreshToken);",
+                  "    pm.test('Registro realizado com sucesso', () => pm.response.to.have.status(201));",
+                  "    pm.test('Resposta contém accessToken', () => pm.expect(body.accessToken).to.be.a('string'));",
+                  "    pm.test('Resposta contém refreshToken', () => pm.expect(body.refreshToken).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@exemplo.com\",\n  \"password\": \"senha1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registra um novo usuário e retorna os tokens JWT de acesso e renovação."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@exemplo.com\",\n  \"password\": \"senha1234\"\n}"
+                },
+                "url": { "raw": "{{baseUrl}}/auth/register" }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"accessToken\": \"<jwt>\",\n  \"refreshToken\": \"<uuid>\",\n  \"tokenType\": \"Bearer\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', body.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', body.refreshToken);",
+                  "    pm.test('Login realizado com sucesso', () => pm.response.to.have.status(200));",
+                  "    pm.test('Resposta contém accessToken', () => pm.expect(body.accessToken).to.be.a('string'));",
+                  "    pm.test('Resposta contém refreshToken', () => pm.expect(body.refreshToken).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@exemplo.com\",\n  \"password\": \"senha1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Autentica o usuário e retorna os tokens JWT de acesso e renovação."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"alice@exemplo.com\",\n  \"password\": \"senha1234\"\n}"
+                },
+                "url": { "raw": "{{baseUrl}}/auth/login" }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"accessToken\": \"<jwt>\",\n  \"refreshToken\": \"<uuid>\",\n  \"tokenType\": \"Bearer\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Renovar Tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', body.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', body.refreshToken);",
+                  "    pm.test('Renovação realizada com sucesso', () => pm.response.to.have.status(200));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Emite um novo par de access token e refresh token, revogando o refresh token anterior."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Obter Usuário Atual",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Resposta contém id', () => pm.expect(body.id).to.exist);",
+                  "pm.test('Resposta contém email', () => pm.expect(body.email).to.be.a('string'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
+            },
+            "description": "Retorna o perfil do usuário atualmente autenticado."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"roles\": [\"USER\"],\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tarefas",
+      "item": [
+        {
+          "name": "Criar Tarefa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Tarefa possui id', () => pm.expect(body.id).to.exist);",
+                  "pm.collectionVariables.set('taskId', body.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Fazer compras\",\n  \"description\": \"Leite, ovos, pão\",\n  \"dueDate\": \"2099-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks"]
+            },
+            "description": "Cria uma nova tarefa atribuída ao usuário autenticado.\n\n**Regras de validação:**\n- `title`: obrigatório, 3–120 caracteres\n- `description`: opcional, até 2 000 caracteres\n- `dueDate`: opcional, não pode ser no passado"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Fazer compras\",\n  \"description\": \"Leite, ovos, pão\",\n  \"status\": \"TODO\",\n  \"dueDate\": \"2099-12-31\",\n  \"ownerId\": 1,\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Listar Tarefas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Resposta é paginada', () => pm.expect(body.content).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tasks?page=0&size=10&sort=createdAt,desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks"],
+              "query": [
+                { "key": "status", "value": "", "disabled": true, "description": "Filtro: TODO | IN_PROGRESS | DONE" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sort", "value": "createdAt,desc" }
+              ]
+            },
+            "description": "Retorna uma lista paginada de tarefas.\n- Usuários comuns veem apenas suas próprias tarefas.\n- Usuários ADMIN veem todas as tarefas.\n\nO parâmetro `status` é opcional e filtra pelo status da tarefa."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Tarefa por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Tarefa possui id', () => pm.expect(pm.response.json().id).to.exist);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks", "{{taskId}}"]
+            },
+            "description": "Retorna uma tarefa pelo ID. Apenas o dono ou um ADMIN pode acessá-la."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Tarefa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status atualizado', () => pm.expect(pm.response.json().status).to.equal('IN_PROGRESS'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Fazer compras\",\n  \"description\": \"Leite, ovos, pão, manteiga\",\n  \"status\": \"IN_PROGRESS\",\n  \"dueDate\": \"2099-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks", "{{taskId}}"]
+            },
+            "description": "Atualiza a tarefa. Apenas o dono ou um ADMIN pode atualizá-la.\n\nTodos os campos são obrigatórios no payload de atualização."
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir Tarefa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks", "{{taskId}}"]
+            },
+            "description": "Remove a tarefa. Apenas o dono ou um ADMIN pode excluí-la."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
