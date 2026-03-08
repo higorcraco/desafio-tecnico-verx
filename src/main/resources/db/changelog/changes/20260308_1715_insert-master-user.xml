@@ -1,0 +1,39 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="insert-master-user" author="higorcraco">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM users WHERE id = 1</sqlCheck>
+        </preConditions>
+        <insert tableName="users">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="master"/>
+            <column name="email" value="master@exemplo.com"/>
+            <column name="password" value="$2a$10$2yX.G8lbDv402afeGBbPo.0rdU63Z4DpSWbKlGCkH9Grq5hxKRC7K"/>
+            <column name="created_at" valueComputed="current_timestamp"/>
+            <column name="updated_at" valueComputed="current_timestamp"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-master-user-roles" author="higorcraco">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM user_roles WHERE user_id = 1</sqlCheck>
+        </preConditions>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="role" value="USER"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+
+
+
