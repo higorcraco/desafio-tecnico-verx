@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -59,7 +60,7 @@ public class TaskController {
     public ResponseEntity<Page<TaskResponse>> list(
             @Parameter(description = "Filtrar por status da tarefa (TODO, IN_PROGRESS, DONE)")
             @RequestParam(required = false) TaskStatus status,
-            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
         return ResponseEntity.ok(taskService.list(status, pageable));
     }
 
