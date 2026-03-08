@@ -32,9 +32,10 @@ A Verx Task API disponibiliza endpoints para:
 
 O Swagger UI fica disponível em `http://localhost:8080/swagger-ui.html` quando a aplicação estiver em execução.
 
-Para facilitar o teste da API, um usuário inicial com permissão de ADMIN foi inserido: 
+Para facilitar o teste da API (Essa abordagem só foi utilizada pois se trata de um desafio técnico), um usuário inicial com permissão de ADMIN foi inserido: 
 email: master@exemplo.com
 pass: mudar.123
+
 
 ---
 
@@ -168,7 +169,7 @@ Toda a configuração é fornecida por variáveis de ambiente (carregadas do `.e
 
 O CORS é configurado no Spring Security e lê as origens permitidas da propriedade `cors.allowed-origins`, injetada via variável de ambiente `CORS_ALLOWED_ORIGINS` no perfil de produção.
 
-**Padrão (dev):** `http://localhost:8080,http://localhost:3000,http://localhost:5173`
+**Padrão (dev):** `http://localhost:8080`
 
 > `http://localhost:8080` **deve estar na lista** para o Swagger UI funcionar. O browser envia o cabeçalho `Origin: http://localhost:8080` nos preflights `OPTIONS` e nas requisições `POST`/`PUT` com `Content-Type: application/json`. Se a origem não estiver na lista, o Spring Security retorna 403 e o browser bloqueia a resposta.
 
