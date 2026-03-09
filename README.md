@@ -33,7 +33,9 @@ A Verx Task API disponibiliza endpoints para:
 O Swagger UI fica disponível em `http://localhost:8080/swagger-ui.html` quando a aplicação estiver em execução.
 
 Para facilitar o teste da API (Essa abordagem só foi utilizada pois se trata de um desafio técnico), um usuário inicial com permissão de ADMIN foi inserido: 
+
 email: master@exemplo.com
+
 pass: mudar.123
 
 
@@ -45,7 +47,7 @@ pass: mudar.123
 |---|---|
 | Linguagem | Java 21 |
 | Framework | Spring Boot 3.5 |
-| Segurança | Spring Security + JJWT (HS256) |
+| Segurança | Spring Security + JWT (HS256) |
 | Persistência | Spring Data JPA + PostgreSQL 16 |
 | Migrations | Liquibase |
 | Mapeamento | MapStruct |
