@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -52,7 +54,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/roles")
     public ResponseEntity<UserResponse> addRoles(
-            @Parameter(description = "ID do usuário") @PathVariable Long id,
+            @Parameter(description = "ID do usuário") @PathVariable UUID id,
             @Valid @RequestBody UserRoleRequest request) {
         return ResponseEntity.ok(userService.addRoles(id, request.roles()));
     }
@@ -69,7 +71,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}/roles")
     public ResponseEntity<UserResponse> removeRoles(
-            @Parameter(description = "ID do usuário") @PathVariable Long id,
+            @Parameter(description = "ID do usuário") @PathVariable UUID id,
             @Valid @RequestBody UserRoleRequest request) {
         return ResponseEntity.ok(userService.removeRoles(id, request.roles()));
     }

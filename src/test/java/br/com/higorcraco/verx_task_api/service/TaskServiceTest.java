@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import br.com.higorcraco.verx_task_api.domain.Task;
 import br.com.higorcraco.verx_task_api.domain.User;
@@ -56,12 +57,12 @@ class TaskServiceTest {
 
     @BeforeEach
     void setUp() {
-        regularUser = buildUser(1L, "user@test.com", Role.USER);
-        adminUser   = buildUser(2L, "admin@test.com", Role.ADMIN);
+        regularUser = buildUser(UUID.fromString("00000000-0000-7000-8000-000000000001"), "user@test.com", Role.USER);
+        adminUser   = buildUser(UUID.fromString("00000000-0000-7000-8000-000000000002"), "admin@test.com", Role.ADMIN);
 
         task = buildTask(10L, "My Task", regularUser);
         taskResponse = new TaskResponse(10L, "My Task", "desc", TaskStatus.TODO,
-                LocalDate.now().plusDays(1), 1L, LocalDateTime.now(), LocalDateTime.now());
+                LocalDate.now().plusDays(1), regularUser.getId(), LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
@@ -100,13 +101,13 @@ class TaskServiceTest {
     void list_userWithoutStatusFilter_shouldQueryByOwnerId() {
         Page<Task> page = new PageImpl<>(List.of(task));
         when(userService.getCurrentUser()).thenReturn(regularUser);
-        when(taskRepository.findByOwnerId(eq(1L), any(Pageable.class))).thenReturn(page);
+        when(taskRepository.findByOwnerId(eq(regularUser.getId()), any(Pageable.class))).thenReturn(page);
         when(taskMapper.toResponse(task)).thenReturn(taskResponse);
 
         Page<TaskResponse> result = taskService.list(null, Pageable.unpaged());
 
         assertThat(result.getContent()).hasSize(1);
-        verify(taskRepository).findByOwnerId(eq(1L), any(Pageable.class));
+        verify(taskRepository).findByOwnerId(eq(regularUser.getId()), any(Pageable.class));
         verify(taskRepository, never()).findAll(any(Pageable.class));
     }
 
@@ -114,13 +115,13 @@ class TaskServiceTest {
     void list_userWithStatusFilter_shouldQueryByOwnerIdAndStatus() {
         Page<Task> page = new PageImpl<>(List.of(task));
         when(userService.getCurrentUser()).thenReturn(regularUser);
-        when(taskRepository.findByOwnerIdAndStatus(eq(1L), eq(TaskStatus.TODO), any(Pageable.class))).thenReturn(page);
+        when(taskRepository.findByOwnerIdAndStatus(eq(regularUser.getId()), eq(TaskStatus.TODO), any(Pageable.class))).thenReturn(page);
         when(taskMapper.toResponse(task)).thenReturn(taskResponse);
 
         Page<TaskResponse> result = taskService.list(TaskStatus.TODO, Pageable.unpaged());
 
         assertThat(result.getContent()).hasSize(1);
-        verify(taskRepository).findByOwnerIdAndStatus(eq(1L), eq(TaskStatus.TODO), any(Pageable.class));
+        verify(taskRepository).findByOwnerIdAndStatus(eq(regularUser.getId()), eq(TaskStatus.TODO), any(Pageable.class));
     }
 
     @Test
@@ -182,7 +183,7 @@ class TaskServiceTest {
 
     @Test
     void getById_shouldThrowUnauthorizedAccessException_whenNotOwnerAndNotAdmin() {
-        User otherUser = buildUser(3L, "other@test.com", Role.USER);
+        User otherUser = buildUser(UUID.fromString("00000000-0000-7000-8000-000000000003"), "other@test.com", Role.USER);
         when(userService.getCurrentUser()).thenReturn(otherUser);
         when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
 
@@ -219,7 +220,7 @@ class TaskServiceTest {
 
     @Test
     void update_shouldThrowUnauthorizedAccessException_whenNotOwner() {
-        User otherUser = buildUser(3L, "other@test.com", Role.USER);
+        User otherUser = buildUser(UUID.fromString("00000000-0000-7000-8000-000000000003"), "other@test.com", Role.USER);
         UpdateTaskRequest request = new UpdateTaskRequest("Title", null, null, null);
         when(userService.getCurrentUser()).thenReturn(otherUser);
         when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
@@ -275,7 +276,7 @@ class TaskServiceTest {
 
     @Test
     void delete_shouldThrowUnauthorizedAccessException_whenNotOwner() {
-        User otherUser = buildUser(3L, "other@test.com", Role.USER);
+        User otherUser = buildUser(UUID.fromString("00000000-0000-7000-8000-000000000003"), "other@test.com", Role.USER);
         when(userService.getCurrentUser()).thenReturn(otherUser);
         when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
 
@@ -285,7 +286,7 @@ class TaskServiceTest {
         verify(taskRepository, never()).delete(any());
     }
 
-    private User buildUser(Long id, String email, Role role) {
+    private User buildUser(UUID id, String email, Role role) {
         User user = new User();
         user.setId(id);
         user.setName("User " + id);

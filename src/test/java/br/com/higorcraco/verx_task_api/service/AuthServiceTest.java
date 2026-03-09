@@ -2,6 +2,7 @@ package br.com.higorcraco.verx_task_api.service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import br.com.higorcraco.verx_task_api.domain.User;
 import br.com.higorcraco.verx_task_api.domain.enums.Role;
@@ -63,6 +64,7 @@ class AuthServiceTest {
     private static final String PASSWORD = "password123";
     private static final String ACCESS_TOKEN = "access-token";
     private static final String REFRESH_TOKEN = "refresh-uuid-token";
+    private static final UUID USER_UUID = UUID.fromString("00000000-0000-7000-8000-000000000001");
 
     @BeforeEach
     void setUp() {
@@ -79,7 +81,7 @@ class AuthServiceTest {
 
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User u = invocation.getArgument(0);
-            u.setId(1L);
+            u.setId(USER_UUID);
             return u;
         });
         when(userDetailsService.loadUserByUsername(EMAIL)).thenReturn(userDetails);
@@ -91,7 +93,7 @@ class AuthServiceTest {
         assertThat(response.refreshToken()).isNotNull();
         assertThat(response.tokenType()).isEqualTo("Bearer");
         verify(userRepository).save(any(User.class));
-        verify(valueOperations).set(anyString(), eq("1"), any());
+        verify(valueOperations).set(anyString(), eq(USER_UUID.toString()), any());
     }
 
     @Test
@@ -109,7 +111,7 @@ class AuthServiceTest {
     @Test
     void login_shouldReturnTokens_whenCredentialsAreValid() {
         LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-        User user = buildUser(1L);
+        User user = buildUser(USER_UUID);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
         when(userDetailsService.loadUserByUsername(EMAIL)).thenReturn(userDetails);
@@ -138,9 +140,9 @@ class AuthServiceTest {
 
     @Test
     void refresh_shouldRotateTokenAndReturnNewTokens_whenTokenIsValid() {
-        User user = buildUser(1L);
-        when(valueOperations.get("refresh_token:" + REFRESH_TOKEN)).thenReturn("1");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        User user = buildUser(USER_UUID);
+        when(valueOperations.get("refresh_token:" + REFRESH_TOKEN)).thenReturn(USER_UUID.toString());
+        when(userRepository.findById(USER_UUID)).thenReturn(Optional.of(user));
         when(userDetailsService.loadUserByUsername(EMAIL)).thenReturn(userDetails);
         when(jwtTokenService.generateAccessToken(userDetails)).thenReturn(ACCESS_TOKEN);
 
@@ -148,7 +150,7 @@ class AuthServiceTest {
 
         assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
         verify(redisTemplate).delete("refresh_token:" + REFRESH_TOKEN);
-        verify(valueOperations).set(anyString(), eq("1"), any());
+        verify(valueOperations).set(anyString(), eq(USER_UUID.toString()), any());
     }
 
     @Test
@@ -161,7 +163,7 @@ class AuthServiceTest {
         verify(redisTemplate, never()).delete(anyString());
     }
 
-    private User buildUser(Long id) {
+    private User buildUser(UUID id) {
         User user = new User();
         user.setId(id);
         user.setName("User Name");

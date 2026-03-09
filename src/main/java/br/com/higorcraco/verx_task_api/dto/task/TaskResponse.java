@@ -4,6 +4,7 @@ import br.com.higorcraco.verx_task_api.domain.enums.TaskStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TaskResponse(
         Long id,
@@ -11,7 +12,7 @@ public record TaskResponse(
         String description,
         TaskStatus status,
         LocalDate dueDate,
-        Long ownerId,
+        UUID ownerId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

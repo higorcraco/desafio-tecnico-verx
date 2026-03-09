@@ -23,7 +23,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="due_date" type="DATE"/>
-            <column name="owner_id" type="BIGINT">
+            <column name="owner_id" type="UUID">
                 <constraints nullable="false"
                              foreignKeyName="fk_tasks_owner"
                              references="users(id)"/>

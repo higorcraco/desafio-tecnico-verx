@@ -2,6 +2,7 @@ package br.com.higorcraco.verx_task_api.service;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import br.com.higorcraco.verx_task_api.domain.User;
 import br.com.higorcraco.verx_task_api.domain.enums.Role;
@@ -47,20 +48,20 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse addRoles(Long id, Set<Role> roles) {
+    public UserResponse addRoles(UUID id, Set<Role> roles) {
         User user = findUserById(id);
         user.getRoles().addAll(roles);
         return userMapper.toResponse(userRepository.save(user));
     }
 
     @Transactional
-    public UserResponse removeRoles(Long id, Set<Role> roles) {
+    public UserResponse removeRoles(UUID id, Set<Role> roles) {
         User user = findUserById(id);
         user.getRoles().removeAll(roles);
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    private User findUserById(Long id) {
+    private User findUserById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_RESOURCE, id));
     }
