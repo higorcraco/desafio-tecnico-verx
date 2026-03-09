@@ -4,6 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'checkstyle'
 	id 'com.github.spotbugs' version '6.0.27'
+	id 'jacoco'
 }
 
 group = 'br.com.higorcraco'
@@ -56,6 +57,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
 
 checkstyle {
@@ -81,6 +83,57 @@ spotbugsMain {
 		}
 	}
 }
+
+jacoco {
+	toolVersion = "0.8.14"
+}
+
+def jacocoExclusions = [
+	'**/dto/**',
+	'**/domain/**',
+	'**/config/**',
+	'**/mapper/**',
+	'**/exception/*Exception.class',
+	'**/exception/ErrorResponse.class',
+	'**/VerxTaskApiApplication.class'
+]
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+		html.outputLocation = layout.buildDirectory.dir('reports/jacoco/html')
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExclusions)
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: jacocoExclusions)
+		}))
+	}
+	violationRules {
+		rule {
+			element = 'PACKAGE'
+			includes = [
+				'br.com.higorcraco.verx_task_api.service',
+				'br.com.higorcraco.verx_task_api.helper'
+			]
+			limit {
+				counter = 'INSTRUCTION'
+				minimum = 0.70
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 // SpotBugs on test sources is informational only
 spotbugsTest {
