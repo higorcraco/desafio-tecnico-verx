@@ -47,6 +47,10 @@ public class UserService {
         return user;
     }
 
+    public void clearCache() {
+        userCache.remove();
+    }
+
     @Transactional
     public UserResponse addRoles(UUID id, Set<Role> roles) {
         User user = findUserById(id);
