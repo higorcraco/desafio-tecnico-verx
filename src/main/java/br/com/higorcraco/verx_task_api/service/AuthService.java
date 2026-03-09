@@ -92,7 +92,7 @@ public class AuthService {
         // Rotate: deleção do token antigo e criação de um novo
         redisTemplate.delete(key);
 
-        Long userId = Long.parseLong(userIdStr);
+        UUID userId = UUID.fromString(userIdStr);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_RESOURCE_NAME, userId.toString()));
 

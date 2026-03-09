@@ -12,7 +12,7 @@
             </not>
         </preConditions>
         <createTable tableName="users">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">
@@ -40,7 +40,7 @@
             </not>
         </preConditions>
         <createTable tableName="user_roles">
-            <column name="user_id" type="BIGINT">
+            <column name="user_id" type="UUID">
                 <constraints nullable="false"
                              foreignKeyName="fk_user_roles_user"
                              references="users(id)"/>

@@ -4,7 +4,7 @@
     "description": "Coleção para a Verx Task API – gerenciamento de tarefas com autenticação JWT.\n\n**Configuração:**\n1. Defina a variável de coleção `baseUrl` (padrão: `http://localhost:8080`).\n2. Execute **Registrar** ou **Login** – as variáveis `accessToken` e `refreshToken` são salvas automaticamente.\n3. Todas as requisições protegidas utilizam o `accessToken` salvo automaticamente.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
+    "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:8080",
@@ -17,6 +17,11 @@
     },
     {
       "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
       "value": "",
       "type": "string"
     }
@@ -191,7 +196,8 @@
                   "pm.test('Status é 200', () => pm.response.to.have.status(200));",
                   "const body = pm.response.json();",
                   "pm.test('Resposta contém id', () => pm.expect(body.id).to.exist);",
-                  "pm.test('Resposta contém email', () => pm.expect(body.email).to.be.a('string'));"
+                  "pm.test('Resposta contém email', () => pm.expect(body.email).to.be.a('string'));",
+                  "pm.collectionVariables.set('userId', body.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -200,9 +206,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/me",
+              "raw": "{{baseUrl}}/users/me",
               "host": ["{{baseUrl}}"],
-              "path": ["me"]
+              "path": ["users", "me"]
             },
             "description": "Retorna o perfil do usuário atualmente autenticado."
           },
@@ -212,7 +218,85 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"id\": 1,\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"roles\": [\"USER\"],\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
+              "body": "{\n  \"id\": \"018e8db0-0000-7000-8000-000000000000\",\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"roles\": [\"USER\"],\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Adicionar Roles (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Resposta contém roles', () => pm.expect(body.roles).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\"ADMIN\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "roles"]
+            },
+            "description": "Adiciona roles ao usuário informado. Requer perfil ADMIN.\n\n**Roles disponíveis:** `USER`, `ADMIN`"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"018e8db0-0000-7000-8000-000000000000\",\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"roles\": [\"USER\", \"ADMIN\"],\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Remover Roles (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status é 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Resposta contém roles', () => pm.expect(body.roles).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\"ADMIN\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "roles"]
+            },
+            "description": "Remove roles do usuário informado. Requer perfil ADMIN.\n\n**Roles disponíveis:** `USER`, `ADMIN`"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"018e8db0-0000-7000-8000-000000000000\",\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"roles\": [\"USER\"],\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
             }
           ]
         }
@@ -257,7 +341,7 @@
               "status": "Created",
               "code": 201,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"id\": 1,\n  \"title\": \"Fazer compras\",\n  \"description\": \"Leite, ovos, pão\",\n  \"status\": \"TODO\",\n  \"dueDate\": \"2099-12-31\",\n  \"ownerId\": 1,\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Fazer compras\",\n  \"description\": \"Leite, ovos, pão\",\n  \"status\": \"TODO\",\n  \"dueDate\": \"2099-12-31\",\n  \"ownerId\": \"018e8db0-0000-7000-8000-000000000000\",\n  \"createdAt\": \"2024-01-01T12:00:00Z\",\n  \"updatedAt\": \"2024-01-01T12:00:00Z\"\n}"
             }
           ]
         },

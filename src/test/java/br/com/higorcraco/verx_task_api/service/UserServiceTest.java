@@ -1,13 +1,16 @@
 package br.com.higorcraco.verx_task_api.service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import br.com.higorcraco.verx_task_api.domain.User;
 import br.com.higorcraco.verx_task_api.domain.enums.Role;
 import br.com.higorcraco.verx_task_api.dto.user.UserResponse;
+import br.com.higorcraco.verx_task_api.exception.ResourceNotFoundException;
 import br.com.higorcraco.verx_task_api.exception.UnauthorizedAccessException;
 import br.com.higorcraco.verx_task_api.mapper.UserMapper;
 import br.com.higorcraco.verx_task_api.repository.UserRepository;
@@ -38,6 +41,7 @@ class UserServiceTest {
     private UserService userService;
 
     private static final String EMAIL = "user@test.com";
+    private static final UUID USER_UUID = UUID.fromString("00000000-0000-7000-8000-000000000001");
 
     @BeforeEach
     void setUpSecurityContext() {
@@ -85,7 +89,7 @@ class UserServiceTest {
     void getCurrentUserResponse_shouldReturnMappedDto() {
         User user = buildUser();
         UserResponse expectedResponse = new UserResponse(
-                1L, "User Name", EMAIL, Set.of(Role.USER),
+                USER_UUID, "User Name", EMAIL, Set.of(Role.USER),
                 LocalDateTime.now(), LocalDateTime.now());
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
@@ -97,13 +101,68 @@ class UserServiceTest {
         verify(userMapper).toResponse(user);
     }
 
+    @Test
+    void addRoles_shouldAddRolesAndReturnUpdatedUser() {
+        User user = buildUser();
+        UserResponse expectedResponse = new UserResponse(
+                USER_UUID, "User Name", EMAIL, Set.of(Role.USER, Role.ADMIN),
+                LocalDateTime.now(), LocalDateTime.now());
+
+        when(userRepository.findById(USER_UUID)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toResponse(user)).thenReturn(expectedResponse);
+
+        UserResponse result = userService.addRoles(USER_UUID, Set.of(Role.ADMIN));
+
+        assertThat(result.roles()).contains(Role.ADMIN);
+        assertThat(user.getRoles()).contains(Role.ADMIN);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void addRoles_shouldThrowResourceNotFoundException_whenUserNotFound() {
+        UUID unknownUuid = UUID.fromString("00000000-0000-7000-8000-000000000099");
+        when(userRepository.findById(unknownUuid)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.addRoles(unknownUuid, Set.of(Role.ADMIN)))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    void removeRoles_shouldRemoveRolesAndReturnUpdatedUser() {
+        User user = buildUser();
+        user.getRoles().add(Role.ADMIN);
+        UserResponse expectedResponse = new UserResponse(
+                USER_UUID, "User Name", EMAIL, Set.of(Role.USER),
+                LocalDateTime.now(), LocalDateTime.now());
+
+        when(userRepository.findById(USER_UUID)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toResponse(user)).thenReturn(expectedResponse);
+
+        UserResponse result = userService.removeRoles(USER_UUID, Set.of(Role.ADMIN));
+
+        assertThat(result.roles()).doesNotContain(Role.ADMIN);
+        assertThat(user.getRoles()).doesNotContain(Role.ADMIN);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void removeRoles_shouldThrowResourceNotFoundException_whenUserNotFound() {
+        UUID unknownUuid = UUID.fromString("00000000-0000-7000-8000-000000000099");
+        when(userRepository.findById(unknownUuid)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.removeRoles(unknownUuid, Set.of(Role.ADMIN)))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
     private User buildUser() {
         User user = new User();
-        user.setId(1L);
+        user.setId(USER_UUID);
         user.setName("User Name");
         user.setEmail(EMAIL);
         user.setPassword("encoded");
-        user.setRoles(Set.of(Role.USER));
+        user.setRoles(new HashSet<>(Set.of(Role.USER)));
         return user;
     }
 }

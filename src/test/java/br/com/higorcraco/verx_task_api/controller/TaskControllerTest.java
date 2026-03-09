@@ -3,6 +3,7 @@ package br.com.higorcraco.verx_task_api.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import br.com.higorcraco.verx_task_api.domain.enums.TaskStatus;
 import br.com.higorcraco.verx_task_api.dto.task.TaskRequest;
@@ -44,7 +45,7 @@ class TaskControllerTest {
 
     private static final TaskResponse TASK_RESPONSE = new TaskResponse(
             1L, "My Task", "Some description", TaskStatus.TODO,
-            LocalDate.now().plusDays(1), 10L, LocalDateTime.now(), LocalDateTime.now());
+            LocalDate.now().plusDays(1), UUID.fromString("00000000-0000-7000-8000-00000000000a"), LocalDateTime.now(), LocalDateTime.now());
 
     @Test
     void create_shouldReturn201_whenPayloadIsValid() throws Exception {
